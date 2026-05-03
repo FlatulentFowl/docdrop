@@ -1,0 +1,10 @@
+{
+  "id": "docdrop",
+  "name": "DocDrop",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Convert PDF files to Markdown using the markitdown CLI.",
+  "author": "Rhys Gottwald",
+  "authorUrl": "",
+  "isDesktopOnly": true
+}
