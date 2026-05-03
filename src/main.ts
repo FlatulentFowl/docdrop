@@ -11,6 +11,23 @@ import {
 } from "obsidian";
 import { execFile } from "child_process";
 
+// ─── Supported file types ────────────────────────────────────────────────────
+
+const SUPPORTED_EXTENSIONS = new Set([
+  "pdf",
+  "docx", "doc",
+  "pptx", "ppt",
+  "xlsx", "xls",
+  "jpg", "jpeg", "png", "gif", "webp", "bmp", "tiff",
+  "html", "htm",
+  "csv",
+  "json",
+  "xml",
+  "epub",
+  "zip",
+  "mp3", "wav",
+]);
+
 // ─── Settings ────────────────────────────────────────────────────────────────
 
 interface DocDropSettings {
@@ -373,32 +390,32 @@ export default class DocDropPlugin extends Plugin {
     this.addSettingTab(new DocDropSettingTab(this.app, this));
 
     this.addCommand({
-      id: "convert-active-pdf",
-      name: "Convert active PDF to Markdown",
+      id: "convert-active-file",
+      name: "Convert active file to Markdown",
       callback: () => {
         const activeFile = this.app.workspace.getActiveFile();
         if (!activeFile) {
           new Notice("No file is currently open.");
           return;
         }
-        if (activeFile.extension.toLowerCase() !== "pdf") {
-          new Notice("The active file is not a PDF.");
+        if (!SUPPORTED_EXTENSIONS.has(activeFile.extension.toLowerCase())) {
+          new Notice(`DocDrop does not support .${activeFile.extension} files.`);
           return;
         }
-        this.convertPdf(activeFile);
+        this.convertFile(activeFile);
       },
     });
 
     this.registerEvent(
       this.app.workspace.on("file-menu", (menu, file: TAbstractFile) => {
         if (!(file instanceof TFile)) return;
-        if (file.extension.toLowerCase() !== "pdf") return;
+        if (!SUPPORTED_EXTENSIONS.has(file.extension.toLowerCase())) return;
 
         menu.addItem((item) => {
           item
             .setTitle("Convert to Markdown with DocDrop")
             .setIcon("file-text")
-            .onClick(() => this.convertPdf(file));
+            .onClick(() => this.convertFile(file));
         });
       })
     );
@@ -414,7 +431,7 @@ export default class DocDropPlugin extends Plugin {
     await this.saveData(this.settings);
   }
 
-  private async convertPdf(pdfFile: TFile): Promise<void> {
+  private async convertFile(pdfFile: TFile): Promise<void> {
     const adapter = this.app.vault.adapter;
     const basePath = (adapter as any).getBasePath() as string;
     const absolutePdfPath = `${basePath}/${pdfFile.path}`;
