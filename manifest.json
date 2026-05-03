@@ -3,7 +3,7 @@
   "name": "DocDrop",
   "version": "1.0.0",
   "minAppVersion": "1.0.0",
-  "description": "Convert PDF files to Markdown using Microsoft's markitdown.",
+  "description": "Convert PDF files to Markdown using Microsofts markitdown CLI.",
   "author": "Rhys Gottwald",
   "authorUrl": "",
   "isDesktopOnly": true
