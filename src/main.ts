@@ -42,7 +42,6 @@ interface DocDropSettings {
   useDocIntel: boolean;
   docIntelEndpoint: string;
   docIntelApiKey: string;
-  mimeType: string;
   charset: string;
 }
 
@@ -58,7 +57,6 @@ const DEFAULT_SETTINGS: DocDropSettings = {
   useDocIntel: false,
   docIntelEndpoint: "",
   docIntelApiKey: "",
-  mimeType: "",
   charset: "",
 };
 
@@ -194,23 +192,6 @@ class DocDropSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("MIME type hint")
-      .setDesc(
-        "Tells markitdown what kind of file it is receiving, e.g. \"application/pdf\". " +
-        "Normally not needed — markitdown detects the type automatically. " +
-        "Only set this if conversion produces wrong results and you suspect a detection failure."
-      )
-      .addText((text) =>
-        text
-          .setPlaceholder("application/pdf")
-          .setValue(this.plugin.settings.mimeType)
-          .onChange(async (value) => {
-            this.plugin.settings.mimeType = value.trim();
-            await this.plugin.saveSettings();
-          })
-      );
-
-    new Setting(containerEl)
       .setName("Character encoding hint")
       .setDesc(
         "Tells markitdown what text encoding the file uses, e.g. \"UTF-8\" or \"ISO-8859-1\". " +
@@ -228,9 +209,13 @@ class DocDropSettingTab extends PluginSettingTab {
 
     // ── markitdown-ocr ──────────────────────────────────────────────────────
 
-    containerEl.createEl("h3", { text: "markitdown-ocr plugin (optional)" });
+    const ocrDetails = containerEl.createEl("details", {
+      cls: "docdrop-collapsible",
+    });
+    ocrDetails.open = this.plugin.settings.usePlugins;
+    ocrDetails.createEl("summary", { text: "markitdown-ocr plugin (optional)" });
 
-    containerEl.createEl("p", {
+    ocrDetails.createEl("p", {
       text:
         "markitdown-ocr is a free, separately-installed plugin that uses an AI vision model (like " +
         "OpenAI's GPT-4o) to read text from images inside PDFs — useful for scanned documents or " +
@@ -239,7 +224,7 @@ class DocDropSettingTab extends PluginSettingTab {
       cls: "setting-item-description",
     });
 
-    new Setting(containerEl)
+    new Setting(ocrDetails)
       .setName("Enable markitdown-ocr")
       .setDesc(
         "Activate any installed markitdown plugins, including markitdown-ocr. " +
@@ -257,7 +242,7 @@ class DocDropSettingTab extends PluginSettingTab {
       );
 
     if (this.plugin.settings.usePlugins) {
-      new Setting(containerEl)
+      new Setting(ocrDetails)
         .setName("OpenAI API key")
         .setDesc(
           "Your secret API key from OpenAI (or a compatible service). " +
@@ -275,7 +260,7 @@ class DocDropSettingTab extends PluginSettingTab {
           text.inputEl.type = "password";
         });
 
-      new Setting(containerEl)
+      new Setting(ocrDetails)
         .setName("AI model")
         .setDesc(
           "The vision-capable AI model markitdown-ocr will use to read images. " +
@@ -292,13 +277,13 @@ class DocDropSettingTab extends PluginSettingTab {
             })
         );
 
-      new Setting(containerEl)
+      new Setting(ocrDetails)
         .setName("OpenAI API base URL (optional)")
         .setDesc(
           "Override the API server markitdown-ocr connects to. " +
           "Leave blank to use the default OpenAI servers. " +
           "Set this if you are using Azure OpenAI or a self-hosted compatible service " +
-          "(e.g. https://your-resource.openai.azure.com/). "
+          "(e.g. https://your-resource.openai.azure.com/)."
         )
         .addText((text) =>
           text
@@ -313,9 +298,13 @@ class DocDropSettingTab extends PluginSettingTab {
 
     // ── Azure Document Intelligence ─────────────────────────────────────────
 
-    containerEl.createEl("h3", { text: "Azure Document Intelligence (optional)" });
+    const azureDetails = containerEl.createEl("details", {
+      cls: "docdrop-collapsible",
+    });
+    azureDetails.open = this.plugin.settings.useDocIntel;
+    azureDetails.createEl("summary", { text: "Azure Document Intelligence (optional)" });
 
-    containerEl.createEl("p", {
+    azureDetails.createEl("p", {
       text:
         "Document Intelligence is a paid Microsoft Azure cloud service that uses AI to read PDFs with " +
         "much higher accuracy than offline conversion — especially for scanned documents, handwriting, " +
@@ -324,7 +313,7 @@ class DocDropSettingTab extends PluginSettingTab {
       cls: "setting-item-description",
     });
 
-    new Setting(containerEl)
+    new Setting(azureDetails)
       .setName("Use Document Intelligence")
       .setDesc(
         "Send the PDF to Microsoft Azure for conversion instead of processing it locally. " +
@@ -341,7 +330,7 @@ class DocDropSettingTab extends PluginSettingTab {
       );
 
     if (this.plugin.settings.useDocIntel) {
-      new Setting(containerEl)
+      new Setting(azureDetails)
         .setName("Endpoint URL")
         .setDesc(
           "The URL of your Azure Document Intelligence resource. " +
@@ -358,7 +347,7 @@ class DocDropSettingTab extends PluginSettingTab {
             })
         );
 
-      new Setting(containerEl)
+      new Setting(azureDetails)
         .setName("API key")
         .setDesc(
           "The secret key that authenticates you with Azure Document Intelligence. " +
@@ -524,7 +513,6 @@ export default class DocDropPlugin extends Plugin {
     const args: string[] = [absolutePdfPath];
     if (this.settings.keepDataUris) args.push("--keep-data-uris");
     if (this.settings.usePlugins) args.push("--use-plugins");
-    if (this.settings.mimeType) args.push("--mime-type", this.settings.mimeType);
     if (this.settings.charset) args.push("--charset", this.settings.charset);
     if (this.settings.useDocIntel) {
       args.push("--use-docintel");
