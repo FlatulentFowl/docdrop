@@ -1,5 +1,6 @@
 import {
   App,
+  FileSystemAdapter,
   Modal,
   Notice,
   Plugin,
@@ -124,8 +125,6 @@ class DocDropSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    containerEl.createEl("h2", { text: "DocDrop" });
-
     new Setting(containerEl)
       .setName("Executable path")
       .setDesc(
@@ -173,7 +172,7 @@ class DocDropSettingTab extends PluginSettingTab {
         );
     }
 
-    containerEl.createEl("h3", { text: "Conversion options" });
+    new Setting(containerEl).setName("Conversion").setHeading();
 
     new Setting(containerEl)
       .setName("Keep images")
@@ -391,7 +390,7 @@ export default class DocDropPlugin extends Plugin {
           new Notice(`DocDrop does not support .${activeFile.extension} files.`);
           return;
         }
-        this.convertFile(activeFile);
+        void this.convertFile(activeFile);
       },
     });
 
@@ -413,7 +412,7 @@ export default class DocDropPlugin extends Plugin {
   onunload(): void {}
 
   async loadSettings(): Promise<void> {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as Partial<DocDropSettings>);
   }
 
   async saveSettings(): Promise<void> {
@@ -422,7 +421,11 @@ export default class DocDropPlugin extends Plugin {
 
   private async convertFile(pdfFile: TFile): Promise<void> {
     const adapter = this.app.vault.adapter;
-    const basePath = (adapter as any).getBasePath() as string;
+    if (!(adapter instanceof FileSystemAdapter)) {
+      new Notice("DocDrop only works on desktop (local vault).");
+      return;
+    }
+    const basePath = adapter.getBasePath();
     const absolutePdfPath = `${basePath}/${pdfFile.path}`;
 
     const outputVaultPath = this.resolveOutputPath(pdfFile);
@@ -438,7 +441,7 @@ export default class DocDropPlugin extends Plugin {
       new OverwriteModal(
         this.app,
         outputVaultPath,
-        () => this.runConversion(absolutePdfPath, outputVaultPath, existing),
+        () => { void this.runConversion(absolutePdfPath, outputVaultPath, existing); },
         () => new Notice("Conversion cancelled.")
       ).open();
       return;
