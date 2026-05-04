@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "node esbuild.config.mjs",
-    "build": "tsc --noEmit --skipLibCheck && node esbuild.config.mjs production"
+    "build": "tsc --noEmit --skipLibCheck && node esbuild.config.mjs production",
+    "lint": "eslint \"**/*.ts\""
   },
   "license": "MIT",
   "dependencies": {
@@ -14,8 +15,11 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@typescript-eslint/parser": "^8.59.1",
     "builtin-modules": "^4.0.0",
     "esbuild": "^0.25.5",
+    "eslint": "^9.39.4",
+    "eslint-plugin-obsidianmd": "^0.2.9",
     "typescript": "^5.8.3"
   }
 }

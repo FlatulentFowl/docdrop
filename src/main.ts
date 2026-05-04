@@ -1,5 +1,6 @@
 import {
   App,
+  FileSystemAdapter,
   Modal,
   Notice,
   Plugin,
@@ -112,16 +113,15 @@ class DocDropSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName("DocDrop")
-      .setHeading();
-
-    new Setting(containerEl)
       .setName("Executable path")
       .setDesc(
+        // /skip -- PATH is an environment variable, all-caps is correct
+        // /skip -- "markitdown" is the tool's actual lowercase name          
         'Full path to the markitdown binary, or just "markitdown" if it is on your PATH.'
       )
       .addText((text) =>
         text
+          // /skip -- "markitdown" is the tool's actual lowercase name
           .setPlaceholder("markitdown")
           .setValue(this.plugin.settings.executablePath)
           .onChange((value) => {
@@ -149,6 +149,7 @@ class DocDropSettingTab extends PluginSettingTab {
       new Setting(containerEl)
         .setName("Custom output folder")
         .setDesc(
+          // /skip -- "Converted" is an example folder name shown verbatim, not a UI label
           'Vault-relative path, e.g. "Converted". The folder must already exist.'
         )
         .addText((text) =>
@@ -163,7 +164,7 @@ class DocDropSettingTab extends PluginSettingTab {
     }
 
     new Setting(containerEl)
-      .setName("Conversion options")
+      .setName("Conversion")
       .setHeading();
 
     new Setting(containerEl)
@@ -183,6 +184,7 @@ class DocDropSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
+      // /skip -- MIME is an acronym, all-caps is correct
       .setName("MIME type hint")
       .setDesc(
         "Tells markitdown what kind of file it is receiving, e.g. \"application/pdf\". " +
@@ -191,6 +193,7 @@ class DocDropSettingTab extends PluginSettingTab {
       )
       .addText((text) =>
         text
+          // /skip -- "application/pdf" is a MIME type string, lowercase per spec
           .setPlaceholder("application/pdf")
           .setValue(this.plugin.settings.mimeType)
           .onChange((value) => {
@@ -218,6 +221,7 @@ class DocDropSettingTab extends PluginSettingTab {
     // ── markitdown-ocr ──────────────────────────────────────────────────────
 
     new Setting(containerEl)
+      // /skip -- "markitdown-ocr" is the tool's actual lowercase name
       .setName("markitdown-ocr plugin (optional)")
       .setHeading();
 
@@ -257,6 +261,7 @@ class DocDropSettingTab extends PluginSettingTab {
         )
         .addText((text) => {
           text
+            // /skip -- "sk-proj-..." is an API key format placeholder, lowercase is the actual format
             .setPlaceholder("sk-proj-...")
             .setValue(this.plugin.settings.openAiApiKey)
             .onChange((value) => {
@@ -275,6 +280,7 @@ class DocDropSettingTab extends PluginSettingTab {
         )
         .addText((text) =>
           text
+            // /skip -- "gpt-4o" is the model's API identifier, lowercase per OpenAI convention
             .setPlaceholder("gpt-4o")
             .setValue(this.plugin.settings.openAiModel)
             .onChange((value) => {
@@ -293,6 +299,7 @@ class DocDropSettingTab extends PluginSettingTab {
         )
         .addText((text) =>
           text
+            // /skip -- URL placeholder, case-sensitive and must match actual endpoint
             .setPlaceholder("https://api.openai.com/v1")
             .setValue(this.plugin.settings.openAiBaseUrl)
             .onChange((value) => {
@@ -305,6 +312,7 @@ class DocDropSettingTab extends PluginSettingTab {
     // ── Azure Document Intelligence ─────────────────────────────────────────
 
     new Setting(containerEl)
+      // /skip -- "Document Intelligence" is a proper Microsoft product name
       .setName("Azure Document Intelligence (optional)")
       .setHeading();
 
@@ -318,6 +326,7 @@ class DocDropSettingTab extends PluginSettingTab {
     });
 
     new Setting(containerEl)
+      // /skip -- "Document Intelligence" is a proper Microsoft product name
       .setName("Use Document Intelligence")
       .setDesc(
         "Send the PDF to Microsoft Azure for conversion instead of processing it locally. " +
@@ -343,6 +352,7 @@ class DocDropSettingTab extends PluginSettingTab {
         )
         .addText((text) =>
           text
+            // /skip -- URL placeholder, case-sensitive and must match actual endpoint format
             .setPlaceholder("https://your-resource.cognitiveservices.azure.com/")
             .setValue(this.plugin.settings.docIntelEndpoint)
             .onChange((value) => {
@@ -360,6 +370,7 @@ class DocDropSettingTab extends PluginSettingTab {
         )
         .addText((text) => {
           text
+            // /skip -- "Azure" is a proper noun
             .setPlaceholder("Your Azure API key")
             .setValue(this.plugin.settings.docIntelApiKey)
             .onChange((value) => {
@@ -395,7 +406,7 @@ export default class DocDropPlugin extends Plugin {
           new Notice("The active file is not a PDF.");
           return;
         }
-        this.convertPdf(activeFile);
+        void this.convertPdf(activeFile);
       },
     });
 
@@ -406,6 +417,7 @@ export default class DocDropPlugin extends Plugin {
 
         menu.addItem((item) => {
           item
+            // /skip -- "DocDrop" is the plugin's proper name
             .setTitle("Convert to Markdown with DocDrop")
             .setIcon("file-text")
             .onClick(() => this.convertPdf(file));
@@ -414,10 +426,10 @@ export default class DocDropPlugin extends Plugin {
     );
   }
 
-  onunload(): void {}
+  onunload(): void { }
 
   async loadSettings(): Promise<void> {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as Partial<DocDropSettings>);
   }
 
   async saveSettings(): Promise<void> {
@@ -426,7 +438,12 @@ export default class DocDropPlugin extends Plugin {
 
   private async convertPdf(pdfFile: TFile): Promise<void> {
     const adapter = this.app.vault.adapter;
-    const basePath = (adapter as { getBasePath(): string }).getBasePath();
+    if (!(adapter instanceof FileSystemAdapter)) {
+      // /skip -- "DocDrop" is the plugin's proper name
+      new Notice("DocDrop only works on desktop (local vault).");
+      return;
+    }
+    const basePath = adapter.getBasePath();
     const absolutePdfPath = `${basePath}/${pdfFile.path}`;
 
     const outputVaultPath = this.resolveOutputPath(pdfFile);
@@ -442,7 +459,7 @@ export default class DocDropPlugin extends Plugin {
       new OverwriteModal(
         this.app,
         outputVaultPath,
-        () => this.runConversion(absolutePdfPath, outputVaultPath, existing),
+        () => { void this.runConversion(absolutePdfPath, outputVaultPath, existing); },
         () => new Notice("Conversion cancelled.")
       ).open();
       return;
