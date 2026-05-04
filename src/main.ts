@@ -68,7 +68,9 @@ class OverwriteModal extends Modal {
     const { contentEl } = this;
     contentEl.empty();
 
-    contentEl.createEl("h2", { text: "File already exists" });
+    new Setting(contentEl)
+      .setName("File already exists")
+      .setHeading();
     contentEl.createEl("p", {
       text: `"${this.fileName}" already exists. Overwrite it?`,
     });
@@ -109,7 +111,9 @@ class DocDropSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    containerEl.createEl("h2", { text: "DocDrop" });
+    new Setting(containerEl)
+      .setName("DocDrop")
+      .setHeading();
 
     new Setting(containerEl)
       .setName("Executable path")
@@ -120,9 +124,9 @@ class DocDropSettingTab extends PluginSettingTab {
         text
           .setPlaceholder("markitdown")
           .setValue(this.plugin.settings.executablePath)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.executablePath = value.trim() || "markitdown";
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
           })
       );
 
@@ -134,9 +138,9 @@ class DocDropSettingTab extends PluginSettingTab {
           .addOption("same", "Same folder as PDF")
           .addOption("custom", "Custom folder")
           .setValue(this.plugin.settings.outputMode)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.outputMode = value as "same" | "custom";
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
             this.display();
           })
       );
@@ -151,14 +155,16 @@ class DocDropSettingTab extends PluginSettingTab {
           text
             .setPlaceholder("Converted")
             .setValue(this.plugin.settings.customOutputFolder)
-            .onChange(async (value) => {
+            .onChange((value) => {
               this.plugin.settings.customOutputFolder = value.trim();
-              await this.plugin.saveSettings();
+              void this.plugin.saveSettings();
             })
         );
     }
 
-    containerEl.createEl("h3", { text: "Conversion options" });
+    new Setting(containerEl)
+      .setName("Conversion options")
+      .setHeading();
 
     new Setting(containerEl)
       .setName("Keep images")
@@ -170,9 +176,9 @@ class DocDropSettingTab extends PluginSettingTab {
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.keepDataUris)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.keepDataUris = value;
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
           })
       );
 
@@ -187,9 +193,9 @@ class DocDropSettingTab extends PluginSettingTab {
         text
           .setPlaceholder("application/pdf")
           .setValue(this.plugin.settings.mimeType)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.mimeType = value.trim();
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
           })
       );
 
@@ -203,15 +209,17 @@ class DocDropSettingTab extends PluginSettingTab {
         text
           .setPlaceholder("UTF-8")
           .setValue(this.plugin.settings.charset)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.charset = value.trim();
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
           })
       );
 
     // ── markitdown-ocr ──────────────────────────────────────────────────────
 
-    containerEl.createEl("h3", { text: "markitdown-ocr plugin (optional)" });
+    new Setting(containerEl)
+      .setName("markitdown-ocr plugin (optional)")
+      .setHeading();
 
     containerEl.createEl("p", {
       text:
@@ -232,9 +240,9 @@ class DocDropSettingTab extends PluginSettingTab {
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.usePlugins)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.usePlugins = value;
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
             this.display();
           })
       );
@@ -251,9 +259,9 @@ class DocDropSettingTab extends PluginSettingTab {
           text
             .setPlaceholder("sk-proj-...")
             .setValue(this.plugin.settings.openAiApiKey)
-            .onChange(async (value) => {
+            .onChange((value) => {
               this.plugin.settings.openAiApiKey = value.trim();
-              await this.plugin.saveSettings();
+              void this.plugin.saveSettings();
             });
           text.inputEl.type = "password";
         });
@@ -269,9 +277,9 @@ class DocDropSettingTab extends PluginSettingTab {
           text
             .setPlaceholder("gpt-4o")
             .setValue(this.plugin.settings.openAiModel)
-            .onChange(async (value) => {
+            .onChange((value) => {
               this.plugin.settings.openAiModel = value.trim() || "gpt-4o";
-              await this.plugin.saveSettings();
+              void this.plugin.saveSettings();
             })
         );
 
@@ -287,16 +295,18 @@ class DocDropSettingTab extends PluginSettingTab {
           text
             .setPlaceholder("https://api.openai.com/v1")
             .setValue(this.plugin.settings.openAiBaseUrl)
-            .onChange(async (value) => {
+            .onChange((value) => {
               this.plugin.settings.openAiBaseUrl = value.trim();
-              await this.plugin.saveSettings();
+              void this.plugin.saveSettings();
             })
         );
     }
 
     // ── Azure Document Intelligence ─────────────────────────────────────────
 
-    containerEl.createEl("h3", { text: "Azure Document Intelligence (optional)" });
+    new Setting(containerEl)
+      .setName("Azure Document Intelligence (optional)")
+      .setHeading();
 
     containerEl.createEl("p", {
       text:
@@ -316,9 +326,9 @@ class DocDropSettingTab extends PluginSettingTab {
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.useDocIntel)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.useDocIntel = value;
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
             this.display();
           })
       );
@@ -335,9 +345,9 @@ class DocDropSettingTab extends PluginSettingTab {
           text
             .setPlaceholder("https://your-resource.cognitiveservices.azure.com/")
             .setValue(this.plugin.settings.docIntelEndpoint)
-            .onChange(async (value) => {
+            .onChange((value) => {
               this.plugin.settings.docIntelEndpoint = value.trim();
-              await this.plugin.saveSettings();
+              void this.plugin.saveSettings();
             })
         );
 
@@ -352,9 +362,9 @@ class DocDropSettingTab extends PluginSettingTab {
           text
             .setPlaceholder("Your Azure API key")
             .setValue(this.plugin.settings.docIntelApiKey)
-            .onChange(async (value) => {
+            .onChange((value) => {
               this.plugin.settings.docIntelApiKey = value.trim();
-              await this.plugin.saveSettings();
+              void this.plugin.saveSettings();
             });
           text.inputEl.type = "password";
         });
@@ -416,7 +426,7 @@ export default class DocDropPlugin extends Plugin {
 
   private async convertPdf(pdfFile: TFile): Promise<void> {
     const adapter = this.app.vault.adapter;
-    const basePath = (adapter as any).getBasePath() as string;
+    const basePath = (adapter as { getBasePath(): string }).getBasePath();
     const absolutePdfPath = `${basePath}/${pdfFile.path}`;
 
     const outputVaultPath = this.resolveOutputPath(pdfFile);
