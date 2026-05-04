@@ -116,12 +116,14 @@ class DocDropSettingTab extends PluginSettingTab {
       .setName("Executable path")
       .setDesc(
         // /skip -- PATH is an environment variable, all-caps is correct
-        // /skip -- "markitdown" is the tool's actual lowercase name          
+        // /skip -- "markitdown" is the tool's actual lowercase name
+        // eslint-disable-next-line obsidianmd/ui/sentence-case -- PATH is an env var (all-caps correct); "markitdown" is the tool's canonical lowercase name
         'Full path to the markitdown binary, or just "markitdown" if it is on your PATH.'
       )
       .addText((text) =>
         text
           // /skip -- "markitdown" is the tool's actual lowercase name
+          // eslint-disable-next-line obsidianmd/ui/sentence-case -- "markitdown" is the tool's canonical lowercase name
           .setPlaceholder("markitdown")
           .setValue(this.plugin.settings.executablePath)
           .onChange((value) => {
@@ -150,6 +152,7 @@ class DocDropSettingTab extends PluginSettingTab {
         .setName("Custom output folder")
         .setDesc(
           // /skip -- "Converted" is an example folder name shown verbatim, not a UI label
+          // eslint-disable-next-line obsidianmd/ui/sentence-case -- "Converted" is an example folder name shown verbatim, not a UI label
           'Vault-relative path, e.g. "Converted". The folder must already exist.'
         )
         .addText((text) =>
@@ -185,6 +188,7 @@ class DocDropSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       // /skip -- MIME is an acronym, all-caps is correct
+      // eslint-disable-next-line obsidianmd/ui/sentence-case -- MIME is an acronym, all-caps correct
       .setName("MIME type hint")
       .setDesc(
         "Tells markitdown what kind of file it is receiving, e.g. \"application/pdf\". " +
@@ -194,6 +198,7 @@ class DocDropSettingTab extends PluginSettingTab {
       .addText((text) =>
         text
           // /skip -- "application/pdf" is a MIME type string, lowercase per spec
+          // eslint-disable-next-line obsidianmd/ui/sentence-case -- "application/pdf" is a MIME type string, lowercase per spec
           .setPlaceholder("application/pdf")
           .setValue(this.plugin.settings.mimeType)
           .onChange((value) => {
@@ -222,6 +227,7 @@ class DocDropSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       // /skip -- "markitdown-ocr" is the tool's actual lowercase name
+      // eslint-disable-next-line obsidianmd/ui/sentence-case -- "markitdown-ocr" is the tool's canonical lowercase name
       .setName("markitdown-ocr plugin (optional)")
       .setHeading();
 
@@ -262,6 +268,7 @@ class DocDropSettingTab extends PluginSettingTab {
         .addText((text) => {
           text
             // /skip -- "sk-proj-..." is an API key format placeholder, lowercase is the actual format
+            // eslint-disable-next-line obsidianmd/ui/sentence-case -- "sk-proj-..." is an API key format placeholder, lowercase is the actual format
             .setPlaceholder("sk-proj-...")
             .setValue(this.plugin.settings.openAiApiKey)
             .onChange((value) => {
@@ -281,6 +288,7 @@ class DocDropSettingTab extends PluginSettingTab {
         .addText((text) =>
           text
             // /skip -- "gpt-4o" is the model's API identifier, lowercase per OpenAI convention
+            // eslint-disable-next-line obsidianmd/ui/sentence-case -- "gpt-4o" is the model's API identifier, lowercase per OpenAI convention
             .setPlaceholder("gpt-4o")
             .setValue(this.plugin.settings.openAiModel)
             .onChange((value) => {
@@ -300,6 +308,7 @@ class DocDropSettingTab extends PluginSettingTab {
         .addText((text) =>
           text
             // /skip -- URL placeholder, case-sensitive and must match actual endpoint
+            // eslint-disable-next-line obsidianmd/ui/sentence-case -- URL placeholder, case-sensitive and must match actual endpoint
             .setPlaceholder("https://api.openai.com/v1")
             .setValue(this.plugin.settings.openAiBaseUrl)
             .onChange((value) => {
@@ -313,6 +322,7 @@ class DocDropSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       // /skip -- "Document Intelligence" is a proper Microsoft product name
+      // eslint-disable-next-line obsidianmd/ui/sentence-case -- "Azure Document Intelligence" is a proper Microsoft product name
       .setName("Azure Document Intelligence (optional)")
       .setHeading();
 
@@ -327,6 +337,7 @@ class DocDropSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       // /skip -- "Document Intelligence" is a proper Microsoft product name
+      // eslint-disable-next-line obsidianmd/ui/sentence-case -- "Document Intelligence" is a proper Microsoft product name
       .setName("Use Document Intelligence")
       .setDesc(
         "Send the PDF to Microsoft Azure for conversion instead of processing it locally. " +
@@ -353,6 +364,7 @@ class DocDropSettingTab extends PluginSettingTab {
         .addText((text) =>
           text
             // /skip -- URL placeholder, case-sensitive and must match actual endpoint format
+            // eslint-disable-next-line obsidianmd/ui/sentence-case -- URL placeholder, case-sensitive and must match actual endpoint format
             .setPlaceholder("https://your-resource.cognitiveservices.azure.com/")
             .setValue(this.plugin.settings.docIntelEndpoint)
             .onChange((value) => {
@@ -371,6 +383,7 @@ class DocDropSettingTab extends PluginSettingTab {
         .addText((text) => {
           text
             // /skip -- "Azure" is a proper noun
+            // eslint-disable-next-line obsidianmd/ui/sentence-case -- "Azure" is a proper noun
             .setPlaceholder("Your Azure API key")
             .setValue(this.plugin.settings.docIntelApiKey)
             .onChange((value) => {
@@ -418,6 +431,7 @@ export default class DocDropPlugin extends Plugin {
         menu.addItem((item) => {
           item
             // /skip -- "DocDrop" is the plugin's proper name
+            // eslint-disable-next-line obsidianmd/ui/sentence-case -- "DocDrop" is the plugin's proper name
             .setTitle("Convert to Markdown with DocDrop")
             .setIcon("file-text")
             .onClick(() => this.convertPdf(file));
@@ -440,6 +454,7 @@ export default class DocDropPlugin extends Plugin {
     const adapter = this.app.vault.adapter;
     if (!(adapter instanceof FileSystemAdapter)) {
       // /skip -- "DocDrop" is the plugin's proper name
+      // eslint-disable-next-line obsidianmd/ui/sentence-case -- "DocDrop" is the plugin's proper name
       new Notice("DocDrop only works on desktop (local vault).");
       return;
     }
