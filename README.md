@@ -41,7 +41,7 @@ pip install markitdown-ocr openai
 
 ### Manual installation
 
-1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/rgottwald/docdrop/releases)
+1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/FlatulentFowl/docdrop/releases)
 2. Copy them into your vault at:
    ```
    <your-vault>/.obsidian/plugins/docdrop/
