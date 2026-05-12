@@ -1,6 +1,6 @@
 {
   "name": "docdrop",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Obsidian plugin: convert PDFs to Markdown via Microsoft's markitdown",
   "main": "main.js",
   "type": "module",
