@@ -1,0 +1,238 @@
+# DocDrop Plugin Description & Usage Guide
+
+## What is DocDrop?
+
+**DocDrop** is an Obsidian plugin that converts documents, spreadsheets, images, and more into clean, usable Markdown files directly within your vault. Powered by Microsoft's **MarkItDown** CLI, it processes files entirely on your machine (with optional cloud AI support for enhanced OCR) — giving you control, speed, and privacy.
+
+Right-click any supported file in your vault and have it converted to Markdown in seconds. No cloud dependency required by default, no complex workflows — just convert and go.
+
+---
+
+## Supported File Types
+
+DocDrop handles a wide variety of formats:
+
+- **Documents:** PDF, Word (`.docx`, `.doc`)
+- **Presentations:** PowerPoint (`.pptx`, `.ppt`)
+- **Spreadsheets:** Excel (`.xlsx`, `.xls`)
+- **Images:** JPEG, PNG, GIF, WebP, BMP, TIFF
+- **Markup & Data:** HTML, CSV, JSON, XML, EPUB, ZIP
+- **Audio:** MP3, WAV (via ffmpeg)
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+Before using DocDrop, install the required dependencies:
+
+1. **Python 3.10+** (check: `python3 --version`)
+2. **MarkItDown CLI:**
+   ```bash
+   pip install markitdown
+   ```
+   Verify: `markitdown --version`
+
+3. **Obsidian 1.0.0+** (desktop only)
+
+### Installation
+
+1. Open Obsidian → **Settings** → **Community Plugins**
+2. Click **Browse** and search for **DocDrop**
+3. Click **Install**, then **Enable**
+
+(For manual installation, see the [README](README.md#installation))
+
+---
+
+## How to Use DocDrop
+
+### Method 1: Right-Click Context Menu
+
+1. In the Obsidian file explorer, **right-click** a supported file (e.g., a PDF)
+2. Select **"Convert to Markdown with DocDrop"**
+3. Wait for the conversion to complete
+4. A new `.md` file appears in the same folder (or your configured output location)
+
+### Method 2: Command Palette
+
+1. Open the command palette with `Cmd/Ctrl + P`
+2. Type: **"DocDrop: Convert active file to Markdown"**
+3. Press Enter
+4. The currently open file is converted
+
+### Output
+
+The converted Markdown file takes the same name as the source file but with a `.md` extension. If a file with that name already exists, DocDrop prompts you to confirm before overwriting.
+
+---
+
+## Configuration
+
+Open **Settings → DocDrop** to customize DocDrop's behavior.
+
+### Essential Settings
+
+| Setting | What It Does |
+|---------|-------------|
+| **Executable path** | Where to find the `markitdown` binary. Usually just `markitdown` if installed via pip. If you get "command not found," set this to the full path (e.g., `/usr/local/bin/markitdown`). |
+| **Output location** | **Same folder as PDF** (default): Markdown files land next to the source. **Custom folder**: Choose a vault-relative folder where all conversions go. |
+
+### Conversion Options
+
+| Setting | What It Does |
+|---------|-------------|
+| **Keep images** | Embeds images from PDFs as base64 data in the Markdown file. Preserves visuals but increases file size. Turn off if you only need text. |
+| **MIME type hint** | Tells MarkItDown what file type it's handling (e.g., `application/pdf`). Rarely needed — MarkItDown auto-detects. Only set if conversions are wrong. |
+| **Character encoding hint** | Specifies text encoding (e.g., `UTF-8`, `ISO-8859-1`). Leave blank unless converted text is garbled. |
+
+### Advanced: markitdown-ocr (Optional AI-Powered OCR)
+
+For scanned PDFs or image-based documents, enable AI-powered text extraction:
+
+1. **Install the plugin:**
+   ```bash
+   pip install markitdown-ocr
+   ```
+
+2. **Get an OpenAI API key** at [platform.openai.com](https://platform.openai.com)
+
+3. **In DocDrop settings:**
+   - Toggle **Enable markitdown-ocr**
+   - Paste your OpenAI API key
+   - Choose a model (`gpt-4o` for best results, `gpt-4o-mini` for cost savings)
+   - Optionally set a custom API base URL (for Azure OpenAI, etc.)
+
+**Cost note:** This sends image data to OpenAI's API, which is billed per token. Large PDFs can add up — check [pricing](https://openai.com/pricing) first.
+
+### Advanced: Azure Document Intelligence (Optional Cloud Service)
+
+For production-grade accuracy on scanned documents, handwriting, tables, and complex layouts:
+
+1. **Set up Azure:** Create a Document Intelligence resource in the [Azure Portal](https://portal.azure.com)
+
+2. **In DocDrop settings:**
+   - Toggle **Use Document Intelligence**
+   - Paste your endpoint URL (from Azure Portal → your resource → Keys and Endpoint)
+   - Paste your API key (KEY 1 or KEY 2)
+
+**Cost note:** Billed per page processed. Review [Azure pricing](https://azure.microsoft.com/en-us/pricing/details/ai-document-intelligence/) before use.
+
+---
+
+## Common Tasks
+
+### Convert a PDF to Markdown
+
+1. Right-click the PDF in your vault's file explorer
+2. Select **"Convert to Markdown with DocDrop"**
+3. Done! A `.md` file is created
+
+### Convert Multiple Files
+
+Repeat the process for each file. DocDrop handles them one at a time, so you can convert several files in succession.
+
+### Use OCR for Scanned Documents
+
+1. Install `markitdown-ocr` and set up your OpenAI key in settings (see **Advanced: markitdown-ocr** above)
+2. Convert the PDF as usual
+3. OCR is automatically applied to image-based content
+
+### Save Conversions to a Specific Folder
+
+1. Open **Settings → DocDrop → Output location**
+2. Select **"Custom folder"**
+3. Enter the vault-relative folder name (e.g., `"Converted Docs"`)
+4. Future conversions save to that folder
+
+### Fix "Command Not Found" Error
+
+1. Open your terminal and run: `which markitdown`
+2. Copy the full path (e.g., `/usr/local/bin/markitdown`)
+3. In DocDrop settings, paste it into **Executable path**
+
+---
+
+## Privacy & Security
+
+- **Default (offline) mode:** All processing happens locally. No data leaves your machine.
+- **markitdown-ocr:** PDF images are sent to OpenAI's servers. See [OpenAI's privacy policy](https://openai.com/policies/privacy-policy).
+- **Azure Document Intelligence:** PDFs are sent to Microsoft Azure. See [Microsoft's privacy policy](https://privacy.microsoft.com).
+- **API keys:** Stored securely in `.obsidian/plugins/docdrop/data.json`. **Do not commit this file to a public repository.**
+
+---
+
+## Troubleshooting
+
+### "ENOENT" or "command not found" error
+
+**Problem:** DocDrop can't find MarkItDown.
+
+**Solution:**
+1. Run `which markitdown` in your terminal to find the full path
+2. Copy that path and paste it into **Settings → DocDrop → Executable path**
+
+### Converted text is garbled
+
+**Problem:** Characters appear as nonsense.
+
+**Solution:**
+1. Go to **Settings → DocDrop → Character encoding hint**
+2. Try `UTF-8` first
+3. If that doesn't work, try `ISO-8859-1`
+
+### Scanned PDF produces no text
+
+**Problem:** The PDF is just images of pages; no text is extracted.
+
+**Solution:** Enable **markitdown-ocr** with a valid OpenAI API key (see **Advanced: markitdown-ocr** above) or use **Azure Document Intelligence**.
+
+### Azure returns "401 Unauthorized"
+
+**Problem:** Your API key is wrong or expired.
+
+**Solution:** Get a fresh API key from the Azure Portal → your Document Intelligence resource → **Keys and Endpoint**.
+
+---
+
+## Tips & Best Practices
+
+1. **Test with a small file first:** Before converting large PDFs, try a single-page test to verify quality.
+
+2. **Enable "Keep images" only if needed:** It makes files much larger. Turn it off if you only care about text.
+
+3. **Use OCR for scanned documents:** If a PDF is basically a picture, enable markitdown-ocr or Azure Document Intelligence — standard conversion won't extract the text.
+
+4. **Check your OpenAI usage regularly:** If using markitdown-ocr, monitor your API usage at [platform.openai.com](https://platform.openai.com) to catch runaway costs.
+
+5. **Set a custom output folder:** If you convert a lot of documents, create a folder like `Converted Docs` and point DocDrop there to keep your vault organized.
+
+---
+
+## Performance Notes
+
+- **Typical conversions:** A 10-page PDF usually converts in 1–5 seconds
+- **Large files:** Document Intelligence and OCR add latency as they require cloud processing
+- **Buffer limits:** DocDrop uses a 50MB buffer, suitable for most documents
+
+---
+
+## Need Help?
+
+- **Plugin not working?** See [Troubleshooting](#troubleshooting) above
+- **Plugin documentation:** Visit the [README](README.md)
+- **Report a bug:** Open an issue on [GitHub](https://github.com/FlatulentFowl/docdrop)
+
+---
+
+## Credits
+
+DocDrop is powered by:
+- **MarkItDown** (Microsoft) — core PDF-to-Markdown engine
+- **markitdown-ocr** (Microsoft) — AI-powered OCR
+- **Obsidian** — extensible knowledge base platform
+- **Azure AI Document Intelligence** (Microsoft) — cloud document processing
+- **OpenAI** — vision-based image understanding
+
+See [README](README.md#credits) for full attribution.
