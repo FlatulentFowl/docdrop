@@ -51,7 +51,7 @@ pip install markitdown-ocr openai
 ### Build from source
 
 ```bash
-git clone https://github.com/rgottwald/docdrop
+git clone https://github.com/FlatulentFowl/docdrop
 cd docdrop
 npm install
 npm run build
