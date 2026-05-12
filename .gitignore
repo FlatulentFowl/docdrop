@@ -1,4 +1,3 @@
 node_modules/
 *.js.map
 .DS_Store
-main.js
