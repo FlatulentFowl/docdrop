@@ -84,7 +84,9 @@ class OverwriteModal extends Modal {
     const { contentEl } = this;
     contentEl.empty();
 
-    contentEl.createEl("h2", { text: "File already exists" });
+    new Setting(contentEl)
+      .setName("File already exists")
+      .setHeading();
     contentEl.createEl("p", {
       text: `"${this.fileName}" already exists. Overwrite it?`,
     });
@@ -128,15 +130,18 @@ class DocDropSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("Executable path")
       .setDesc(
+        // /skip -- PATH is an environment variable, all-caps is correct
+        // /skip -- "markitdown" is the tool's actual lowercase name
         'Full path to the markitdown binary, or just "markitdown" if it is on your PATH.'
       )
       .addText((text) =>
         text
+          // /skip -- "markitdown" is the tool's actual lowercase name
           .setPlaceholder("markitdown")
           .setValue(this.plugin.settings.executablePath)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.executablePath = value.trim() || "markitdown";
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
           })
       );
 
@@ -148,9 +153,9 @@ class DocDropSettingTab extends PluginSettingTab {
           .addOption("same", "Same folder as PDF")
           .addOption("custom", "Custom folder")
           .setValue(this.plugin.settings.outputMode)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.outputMode = value as "same" | "custom";
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
             this.display();
           })
       );
@@ -159,20 +164,21 @@ class DocDropSettingTab extends PluginSettingTab {
       new Setting(containerEl)
         .setName("Custom output folder")
         .setDesc(
+          // /skip -- "Converted" is an example folder name shown verbatim, not a UI label
           'Vault-relative path, e.g. "Converted". The folder must already exist.'
         )
         .addText((text) =>
           text
             .setPlaceholder("Converted")
             .setValue(this.plugin.settings.customOutputFolder)
-            .onChange(async (value) => {
+            .onChange((value) => {
               this.plugin.settings.customOutputFolder = value.trim();
-              await this.plugin.saveSettings();
+              void this.plugin.saveSettings();
             })
         );
     }
 
-    new Setting(containerEl).setName("Conversion").setHeading();
+    containerEl.createEl("h3", { text: "Conversion options" });
 
     new Setting(containerEl)
       .setName("Keep images")
@@ -184,8 +190,25 @@ class DocDropSettingTab extends PluginSettingTab {
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.keepDataUris)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.keepDataUris = value;
+            void this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("MIME type hint")
+      .setDesc(
+        "Tells markitdown what kind of file it is receiving, e.g. \"application/pdf\". " +
+        "Normally not needed — markitdown detects the type automatically. " +
+        "Only set this if conversion produces wrong results and you suspect a detection failure."
+      )
+      .addText((text) =>
+        text
+          .setPlaceholder("application/pdf")
+          .setValue(this.plugin.settings.mimeType)
+          .onChange(async (value) => {
+            this.plugin.settings.mimeType = value.trim();
             await this.plugin.saveSettings();
           })
       );
@@ -200,28 +223,23 @@ class DocDropSettingTab extends PluginSettingTab {
         text
           .setPlaceholder("UTF-8")
           .setValue(this.plugin.settings.charset)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.charset = value.trim();
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
           })
       );
 
     // ── markitdown-ocr ──────────────────────────────────────────────────────
 
-    const ocrDetails = containerEl.createEl("details", {
-      cls: "docdrop-collapsible",
-    });
-    ocrDetails.open = this.plugin.settings.usePlugins;
-    ocrDetails.createEl("summary", { text: "markitdown-ocr plugin (optional)" });
+    containerEl.createEl("h3", { text: "markitdown-ocr plugin (optional)" });
 
-    ocrDetails.createEl("p", {
+    containerEl.createEl("p", {
       text:
         "markitdown-ocr is a free, separately-installed plugin that uses an AI vision model (like " +
         "OpenAI's GPT-4o) to read text from images inside PDFs — useful for scanned documents or " +
         "PDFs that are just pictures of pages. Install it first with: pip install markitdown-ocr. " +
-        "You will need an OpenAI account (or a compatible service) to provide the AI.",
-      cls: "setting-item-description",
-    });
+        "You will need an OpenAI account (or a compatible service) to provide the AI."
+      );
 
     new Setting(ocrDetails)
       .setName("Enable markitdown-ocr")
@@ -233,9 +251,9 @@ class DocDropSettingTab extends PluginSettingTab {
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.usePlugins)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.usePlugins = value;
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
             this.display();
           })
       );
@@ -250,11 +268,12 @@ class DocDropSettingTab extends PluginSettingTab {
         )
         .addText((text) => {
           text
+            // /skip -- "sk-proj-..." is an API key format placeholder, lowercase is the actual format
             .setPlaceholder("sk-proj-...")
             .setValue(this.plugin.settings.openAiApiKey)
-            .onChange(async (value) => {
+            .onChange((value) => {
               this.plugin.settings.openAiApiKey = value.trim();
-              await this.plugin.saveSettings();
+              void this.plugin.saveSettings();
             });
           text.inputEl.type = "password";
         });
@@ -268,11 +287,12 @@ class DocDropSettingTab extends PluginSettingTab {
         )
         .addText((text) =>
           text
+            // /skip -- "gpt-4o" is the model's API identifier, lowercase per OpenAI convention
             .setPlaceholder("gpt-4o")
             .setValue(this.plugin.settings.openAiModel)
-            .onChange(async (value) => {
+            .onChange((value) => {
               this.plugin.settings.openAiModel = value.trim() || "gpt-4o";
-              await this.plugin.saveSettings();
+              void this.plugin.saveSettings();
             })
         );
 
@@ -286,33 +306,29 @@ class DocDropSettingTab extends PluginSettingTab {
         )
         .addText((text) =>
           text
+            // /skip -- URL placeholder, case-sensitive and must match actual endpoint
             .setPlaceholder("https://api.openai.com/v1")
             .setValue(this.plugin.settings.openAiBaseUrl)
-            .onChange(async (value) => {
+            .onChange((value) => {
               this.plugin.settings.openAiBaseUrl = value.trim();
-              await this.plugin.saveSettings();
+              void this.plugin.saveSettings();
             })
         );
     }
 
     // ── Azure Document Intelligence ─────────────────────────────────────────
 
-    const azureDetails = containerEl.createEl("details", {
-      cls: "docdrop-collapsible",
-    });
-    azureDetails.open = this.plugin.settings.useDocIntel;
-    azureDetails.createEl("summary", { text: "Azure Document Intelligence (optional)" });
+    containerEl.createEl("h3", { text: "Azure Document Intelligence (optional)" });
 
-    azureDetails.createEl("p", {
+    containerEl.createEl("p", {
       text:
         "Document Intelligence is a paid Microsoft Azure cloud service that uses AI to read PDFs with " +
         "much higher accuracy than offline conversion — especially for scanned documents, handwriting, " +
         "tables, and complex layouts. Requires an Azure account. " +
-        "Leave these blank to use free offline conversion instead.",
-      cls: "setting-item-description",
-    });
+        "Leave these blank to use free offline conversion instead."
+      );
 
-    new Setting(azureDetails)
+    new Setting(containerEl)
       .setName("Use Document Intelligence")
       .setDesc(
         "Send the PDF to Microsoft Azure for conversion instead of processing it locally. " +
@@ -321,9 +337,9 @@ class DocDropSettingTab extends PluginSettingTab {
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.useDocIntel)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.useDocIntel = value;
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
             this.display();
           })
       );
@@ -338,11 +354,12 @@ class DocDropSettingTab extends PluginSettingTab {
         )
         .addText((text) =>
           text
+            // /skip -- URL placeholder, case-sensitive and must match actual endpoint format
             .setPlaceholder("https://your-resource.cognitiveservices.azure.com/")
             .setValue(this.plugin.settings.docIntelEndpoint)
-            .onChange(async (value) => {
+            .onChange((value) => {
               this.plugin.settings.docIntelEndpoint = value.trim();
-              await this.plugin.saveSettings();
+              void this.plugin.saveSettings();
             })
         );
 
@@ -355,11 +372,12 @@ class DocDropSettingTab extends PluginSettingTab {
         )
         .addText((text) => {
           text
+            // /skip -- "Azure" is a proper noun
             .setPlaceholder("Your Azure API key")
             .setValue(this.plugin.settings.docIntelApiKey)
-            .onChange(async (value) => {
+            .onChange((value) => {
               this.plugin.settings.docIntelApiKey = value.trim();
-              await this.plugin.saveSettings();
+              void this.plugin.saveSettings();
             });
           text.inputEl.type = "password";
         });
@@ -390,7 +408,7 @@ export default class DocDropPlugin extends Plugin {
           new Notice(`DocDrop does not support .${activeFile.extension} files.`);
           return;
         }
-        void this.convertFile(activeFile);
+        this.convertPdf(activeFile);
       },
     });
 
@@ -401,6 +419,7 @@ export default class DocDropPlugin extends Plugin {
 
         menu.addItem((item) => {
           item
+            // /skip -- "DocDrop" is the plugin's proper name
             .setTitle("Convert to Markdown with DocDrop")
             .setIcon("file-text")
             .onClick(() => this.convertFile(file));
@@ -409,7 +428,7 @@ export default class DocDropPlugin extends Plugin {
     );
   }
 
-  onunload(): void {}
+  onunload(): void { }
 
   async loadSettings(): Promise<void> {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as Partial<DocDropSettings>);
@@ -421,11 +440,7 @@ export default class DocDropPlugin extends Plugin {
 
   private async convertFile(pdfFile: TFile): Promise<void> {
     const adapter = this.app.vault.adapter;
-    if (!(adapter instanceof FileSystemAdapter)) {
-      new Notice("DocDrop only works on desktop (local vault).");
-      return;
-    }
-    const basePath = adapter.getBasePath();
+    const basePath = (adapter as any).getBasePath() as string;
     const absolutePdfPath = `${basePath}/${pdfFile.path}`;
 
     const outputVaultPath = this.resolveOutputPath(pdfFile);

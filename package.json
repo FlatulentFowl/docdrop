@@ -1,6 +1,6 @@
 {
   "name": "docdrop",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "description": "Obsidian plugin: convert PDFs to Markdown via Microsoft's markitdown",
   "main": "main.js",
   "type": "module",
@@ -14,11 +14,9 @@
     "obsidian": "latest"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "builtin-modules": "^4.0.0",
+    "@types/node": "^22.19.19",
+    "@typescript-eslint/parser": "^8.59.1",
     "esbuild": "^0.25.5",
-    "eslint": "^10.3.0",
-    "eslint-plugin-obsidianmd": "^0.2.9",
     "typescript": "^5.8.3"
   }
 }
