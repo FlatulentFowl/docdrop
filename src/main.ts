@@ -225,14 +225,13 @@ class DocDropSettingTab extends PluginSettingTab {
       .setName("markitdown-ocr plugin (optional)")
       .setHeading();
 
-    containerEl.createEl("p", {
-      text:
+    new Setting(containerEl)
+      .setDesc(
         "markitdown-ocr is a free, separately-installed plugin that uses an AI vision model (like " +
         "OpenAI's GPT-4o) to read text from images inside PDFs — useful for scanned documents or " +
         "PDFs that are just pictures of pages. Install it first with: pip install markitdown-ocr. " +
-        "You will need an OpenAI account (or a compatible service) to provide the AI.",
-      cls: "setting-item-description",
-    });
+        "You will need an OpenAI account (or a compatible service) to provide the AI."
+      );
 
     new Setting(containerEl)
       .setName("Enable markitdown-ocr")
@@ -316,14 +315,13 @@ class DocDropSettingTab extends PluginSettingTab {
       .setName("Azure Document Intelligence (optional)")
       .setHeading();
 
-    containerEl.createEl("p", {
-      text:
+    new Setting(containerEl)
+      .setDesc(
         "Document Intelligence is a paid Microsoft Azure cloud service that uses AI to read PDFs with " +
         "much higher accuracy than offline conversion — especially for scanned documents, handwriting, " +
         "tables, and complex layouts. Requires an Azure account. " +
-        "Leave these blank to use free offline conversion instead.",
-      cls: "setting-item-description",
-    });
+        "Leave these blank to use free offline conversion instead."
+      );
 
     new Setting(containerEl)
       // /skip -- "Document Intelligence" is a proper Microsoft product name
