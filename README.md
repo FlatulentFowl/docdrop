@@ -74,10 +74,10 @@ Right-click any supported file in the Obsidian file explorer and select **Conver
 Open the command palette (`Cmd/Ctrl+P`) and run:
 
 ```
-DocDrop: Convert active PDF to Markdown
+DocDrop: Convert active file to Markdown
 ```
 
-This converts whichever PDF file is currently open/active.
+This converts whichever supported file is currently open/active.
 
 ### Output file
 

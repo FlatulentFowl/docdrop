@@ -44,6 +44,7 @@ interface DocDropSettings {
   docIntelEndpoint: string;
   docIntelApiKey: string;
   charset: string;
+  mimeType: string;
 }
 
 const DEFAULT_SETTINGS: DocDropSettings = {
@@ -59,6 +60,7 @@ const DEFAULT_SETTINGS: DocDropSettings = {
   docIntelEndpoint: "",
   docIntelApiKey: "",
   charset: "",
+  mimeType: "",
 };
 
 // ─── Overwrite Confirmation Modal ────────────────────────────────────────────
@@ -178,7 +180,7 @@ class DocDropSettingTab extends PluginSettingTab {
         );
     }
 
-    containerEl.createEl("h3", { text: "Conversion options" });
+    new Setting(containerEl).setName("Conversion").setHeading();
 
     new Setting(containerEl)
       .setName("Keep images")
@@ -231,7 +233,7 @@ class DocDropSettingTab extends PluginSettingTab {
 
     // ── markitdown-ocr ──────────────────────────────────────────────────────
 
-    containerEl.createEl("h3", { text: "markitdown-ocr plugin (optional)" });
+    new Setting(containerEl).setName("markitdown-ocr plugin (optional)").setHeading();
 
     containerEl.createEl("p", {
       text:
@@ -239,9 +241,9 @@ class DocDropSettingTab extends PluginSettingTab {
         "OpenAI's GPT-4o) to read text from images inside PDFs — useful for scanned documents or " +
         "PDFs that are just pictures of pages. Install it first with: pip install markitdown-ocr. " +
         "You will need an OpenAI account (or a compatible service) to provide the AI."
-      );
+      });
 
-    new Setting(ocrDetails)
+    new Setting(containerEl)
       .setName("Enable markitdown-ocr")
       .setDesc(
         "Activate any installed markitdown plugins, including markitdown-ocr. " +
@@ -259,7 +261,7 @@ class DocDropSettingTab extends PluginSettingTab {
       );
 
     if (this.plugin.settings.usePlugins) {
-      new Setting(ocrDetails)
+      new Setting(containerEl)
         .setName("OpenAI API key")
         .setDesc(
           "Your secret API key from OpenAI (or a compatible service). " +
@@ -278,7 +280,7 @@ class DocDropSettingTab extends PluginSettingTab {
           text.inputEl.type = "password";
         });
 
-      new Setting(ocrDetails)
+      new Setting(containerEl)
         .setName("AI model")
         .setDesc(
           "The vision-capable AI model markitdown-ocr will use to read images. " +
@@ -296,7 +298,7 @@ class DocDropSettingTab extends PluginSettingTab {
             })
         );
 
-      new Setting(ocrDetails)
+      new Setting(containerEl)
         .setName("OpenAI API base URL (optional)")
         .setDesc(
           "Override the API server markitdown-ocr connects to. " +
@@ -318,7 +320,7 @@ class DocDropSettingTab extends PluginSettingTab {
 
     // ── Azure Document Intelligence ─────────────────────────────────────────
 
-    containerEl.createEl("h3", { text: "Azure Document Intelligence (optional)" });
+    new Setting(containerEl).setName("Azure Document Intelligence (optional)").setHeading();
 
     containerEl.createEl("p", {
       text:
@@ -326,7 +328,7 @@ class DocDropSettingTab extends PluginSettingTab {
         "much higher accuracy than offline conversion — especially for scanned documents, handwriting, " +
         "tables, and complex layouts. Requires an Azure account. " +
         "Leave these blank to use free offline conversion instead."
-      );
+      });
 
     new Setting(containerEl)
       .setName("Use Document Intelligence")
@@ -345,7 +347,7 @@ class DocDropSettingTab extends PluginSettingTab {
       );
 
     if (this.plugin.settings.useDocIntel) {
-      new Setting(azureDetails)
+      new Setting(containerEl)
         .setName("Endpoint URL")
         .setDesc(
           "The URL of your Azure Document Intelligence resource. " +
@@ -363,7 +365,7 @@ class DocDropSettingTab extends PluginSettingTab {
             })
         );
 
-      new Setting(azureDetails)
+      new Setting(containerEl)
         .setName("API key")
         .setDesc(
           "The secret key that authenticates you with Azure Document Intelligence. " +
@@ -408,7 +410,7 @@ export default class DocDropPlugin extends Plugin {
           new Notice(`DocDrop does not support .${activeFile.extension} files.`);
           return;
         }
-        this.convertPdf(activeFile);
+        void this.convertFile(activeFile);
       },
     });
 
@@ -440,7 +442,7 @@ export default class DocDropPlugin extends Plugin {
 
   private async convertFile(pdfFile: TFile): Promise<void> {
     const adapter = this.app.vault.adapter;
-    const basePath = (adapter as any).getBasePath() as string;
+    const basePath = (adapter as FileSystemAdapter).getBasePath();
     const absolutePdfPath = `${basePath}/${pdfFile.path}`;
 
     const outputVaultPath = this.resolveOutputPath(pdfFile);
