@@ -1,8 +1,10 @@
 # DocDrop
 
-An [Obsidian](https://obsidian.md) plugin that converts PDF files to Markdown using Microsoft's [MarkItDown](https://github.com/microsoft/markitdown) CLI tool.
+An [Obsidian](https://obsidian.md) plugin that converts documents, spreadsheets, images, and more to Markdown using Microsoft's [MarkItDown](https://github.com/microsoft/markitdown) CLI tool.
 
-Right-click any PDF in your vault and have it converted to a clean Markdown file in seconds — entirely on your machine, no cloud required (unless you opt in to the advanced AI features).
+Right-click any supported file in your vault and have it converted to a clean Markdown file in seconds — entirely on your machine, no cloud required (unless you opt in to the advanced AI features).
+
+**Supported formats:** PDF, Word (`.docx`), PowerPoint (`.pptx`), Excel (`.xlsx`), images (`.jpg`, `.png`, `.gif`, `.webp`, `.bmp`, `.tiff`), HTML, CSV, JSON, XML, EPUB, ZIP, and audio (`.mp3`, `.wav` — requires ffmpeg).
 
 ---
 
@@ -65,7 +67,7 @@ Then copy `main.js`, `manifest.json`, and `styles.css` into your vault's plugin 
 
 ### Right-click menu
 
-Right-click any PDF file in the Obsidian file explorer and select **Convert to Markdown with DocDrop**. The converted `.md` file is saved in the same folder as the PDF (or a custom folder — see Settings).
+Right-click any supported file in the Obsidian file explorer and select **Convert to Markdown with DocDrop**. The converted `.md` file is saved in the same folder as the source file (or a custom folder — see Settings).
 
 ### Command palette
 
