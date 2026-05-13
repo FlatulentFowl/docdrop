@@ -17,6 +17,7 @@
     "@types/node": "^22.19.19",
     "@typescript-eslint/parser": "^8.59.1",
     "esbuild": "^0.25.5",
+    "eslint-plugin-obsidianmd": "^0.3.0",
     "typescript": "^5.8.3"
   }
 }
